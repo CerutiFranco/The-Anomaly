@@ -22,7 +22,6 @@ public class TheAnomaly extends Game {
 		Render.app=this;
 		Render.batch= new SpriteBatch();
 		this.setScreen(new PantallaMenu());
-		
 	}
 
 	@Override
