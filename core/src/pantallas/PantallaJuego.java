@@ -3,14 +3,21 @@ package pantallas;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import elementos.Imagen;
 import utiles.Render;
 
 public class PantallaJuego implements Screen
 {
+	Texture aventurero= new Texture("personaje/adventurer-Sheet.png");
+	TextureRegion aventureroRegion;
+	Sprite s= new Sprite(aventureroRegion);
 	@Override
 	public void show() {
+		aventurero= new Texture("personaje/adventurer-Sheet.png");
+		aventureroRegion = new TextureRegion(aventurero,350,407);
+		TextureRegion[][] temp=aventureroRegion.split(50, 37);
 		
 	}
 
@@ -18,6 +25,7 @@ public class PantallaJuego implements Screen
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		Render.batch.begin();
+//		temp[1][1].draw
 		Render.batch.end();
 	}
 

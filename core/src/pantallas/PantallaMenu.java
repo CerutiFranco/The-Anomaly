@@ -19,8 +19,8 @@ public class PantallaMenu implements Screen{
 	Imagen fondo;
 	BitmapFont fuente;
 	GlyphLayout glyphlayout;
-	int anchoPantalla =1280;
-	int altoPantalla=720;
+	final int anchoPantalla =1280;
+	final int altoPantalla=720;
 	
 	Entradas entradas = new Entradas();
 	int opc=1;
@@ -34,7 +34,7 @@ public class PantallaMenu implements Screen{
 	public void show() {
 		// TODO Auto-generated method stub
 		fondo= new Imagen("bosque.jpg");
-		fondo.setSize(1280, 720);
+		fondo.setSize(anchoPantalla, altoPantalla);
 		for (int i = 0; i < textos.length; i++) {
             textos[i] = new Texto();
         }
