@@ -4,7 +4,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.Gdx;
 
 
@@ -33,7 +32,7 @@ public class PantallaMenu implements Screen{
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		fondo= new Imagen("bosque.jpg");
+		fondo= new Imagen("selva.jpg");
 		fondo.setSize(anchoPantalla, altoPantalla);
 		for (int i = 0; i < textos.length; i++) {
             textos[i] = new Texto();
