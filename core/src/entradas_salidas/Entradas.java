@@ -9,6 +9,7 @@ public class Entradas implements InputProcessor{
 	@Override
 	public boolean keyDown(int keycode) {
 		// TODO Auto-generated method stub
+		
 		if(keycode==Keys.DOWN) {
 			abajo=true;
 		}

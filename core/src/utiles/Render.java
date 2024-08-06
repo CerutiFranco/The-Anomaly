@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.TheAnomaly;
 
 public class Render {
+	
 	public static SpriteBatch batch;
 	
 	public static TheAnomaly app;

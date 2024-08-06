@@ -23,10 +23,10 @@ public class PantallaMenu implements Screen{
 	int altoPantalla=720;
 	
 	Entradas entradas = new Entradas();
-	int opc=1;
-	String texto1= "Comenzar partida";
-	String texto2= "Opciones";
-	String texto3= "Salir";
+	int opc = 1;
+	String texto1 = "Comenzar partida";
+	String texto2 = "Opciones";
+	String texto3 = "Salir";
 	private Texto[] textos = new Texto[3];
 	public float tiempo=0;
 	
@@ -49,26 +49,26 @@ public class PantallaMenu implements Screen{
 		fondo.Dibujar();
 
 		textos[0].drawCenteredText(texto1, altoPantalla / 2 + 100);
-		textos[1].drawCenteredText(texto2, altoPantalla / 2 +50);
+		textos[1].drawCenteredText(texto2, altoPantalla / 2 + 50);
 		textos[2].drawCenteredText(texto3, altoPantalla / 2 );
 		Render.batch.end();
 		
 		tiempo += delta;
 		if(entradas.isAbajo()) {
-			if(tiempo>0.2f) {
-				tiempo=0;
+			if(tiempo > 0.2f) {
+				tiempo = 0;
 				opc++;
 				if(opc>textos.length) {
-					opc=1;
+					opc = 1;
 				}
 			}
 		}
 		if(entradas.isArriba()) {
 			if(tiempo>0.2f) {
-				tiempo=0;
+				tiempo = 0;
 				opc--;
-				if(opc<1) {
-					opc=textos.length;
+				if(opc < 1) {
+					opc = textos.length;
 				}
 			}
 		}
