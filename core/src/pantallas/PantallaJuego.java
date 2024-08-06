@@ -13,7 +13,7 @@ public class PantallaJuego implements Screen
 	Texture aventurero= new Texture("personaje/adventurer-Sheet.png");
 	TextureRegion aventureroRegion;
 	Sprite s= new Sprite(aventureroRegion);
-	Sprite hola;
+	Sprite h;
 	@Override
 	public void show() {
 		aventurero= new Texture("personaje/adventurer-Sheet.png");
