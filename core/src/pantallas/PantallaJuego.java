@@ -13,6 +13,7 @@ public class PantallaJuego implements Screen
 	Texture aventurero= new Texture("personaje/adventurer-Sheet.png");
 	TextureRegion aventureroRegion;
 	Sprite s= new Sprite(aventureroRegion);
+	Sprite hola;
 	@Override
 	public void show() {
 		aventurero= new Texture("personaje/adventurer-Sheet.png");
@@ -25,7 +26,7 @@ public class PantallaJuego implements Screen
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		Render.batch.begin();
-//		temp[1][1].draw
+		
 		Render.batch.end();
 	}
 
