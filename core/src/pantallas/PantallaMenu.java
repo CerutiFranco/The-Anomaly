@@ -20,6 +20,7 @@ public class PantallaMenu implements Screen{
 	GlyphLayout glyphlayout;
 	final int anchoPantalla =1280;
 	final int altoPantalla=720;
+	int hola=0;
 	
 	Entradas entradas = new Entradas();
 	int opc = 1;
