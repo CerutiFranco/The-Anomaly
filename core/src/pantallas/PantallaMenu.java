@@ -17,7 +17,8 @@ public class PantallaMenu implements Screen{
 
 	Imagen fondo;
 	BitmapFont fuente;
-	GlyphLayout glyphlayout;
+	
+	//GlyphLayout glyphlayout;
 	final int anchoPantalla =1280;
 	final int altoPantalla=720;
 	int hola=0;
@@ -46,7 +47,7 @@ public class PantallaMenu implements Screen{
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		Render.batch.begin();
-		fondo.Dibujar();
+		fondo.dibujar();
 
 		textos[0].drawCenteredText(texto1, altoPantalla / 2 + 100);
 		textos[1].drawCenteredText(texto2, altoPantalla / 2 + 50);

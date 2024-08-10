@@ -10,11 +10,11 @@ public class Imagen {
 	private Sprite s;
 	
 	public Imagen(String ruta){
-		t=new Texture(ruta);
-		s=new Sprite(t);
+		t = new Texture(ruta);
+		s = new Sprite(t);
 	}
 	
-	public void Dibujar(){
+	public void dibujar(){
 		s.draw(Render.batch);
 	}
 	public void setSize(float ancho, float alto) {

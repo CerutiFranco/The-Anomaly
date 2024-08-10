@@ -4,20 +4,33 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import elementos.Imagen;
 import utiles.Render;
 
 public class PantallaJuego implements Screen
 {
-	Texture aventurero= new Texture("personaje/adventurer-Sheet.png");
+	Texture aventurero;
 	TextureRegion aventureroRegion;
-	Sprite s= new Sprite(aventureroRegion);
+//	Sprite s = new Sprite(aventureroRegion);
+	private TmxMapLoader mapLoader;
+	private TiledMap map;
+	private OrthogonalTiledMapRenderer render;
+	
+	
+	
 	@Override
 	public void show() {
-		aventurero= new Texture("personaje/adventurer-Sheet.png");
-		aventureroRegion = new TextureRegion(aventurero,350,407);
-		TextureRegion[][] temp=aventureroRegion.split(50, 37);
+		mapLoader = new TmxMapLoader();
+		map = mapLoader.load("mapas/Nivel3.tmx");
+		render = new OrthogonalTiledMapRenderer(map);
+		
+//		aventurero = new Texture("personaje/adventurer-Sheet.png");
+//		aventureroRegion = new TextureRegion(aventurero, 350, 407);
+//		TextureRegion[][] temp = aventureroRegion.split(50, 37);
 		
 	}
 
@@ -25,7 +38,7 @@ public class PantallaJuego implements Screen
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		Render.batch.begin();
-		
+			render.render();
 		Render.batch.end();
 	}
 
