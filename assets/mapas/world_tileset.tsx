@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.0" name="world_tileset" tilewidth="16" tileheight="16" tilecount="256" columns="16">
- <image source="../../6to/brackeys_platformer_assets/sprites/world_tileset.png" width="256" height="256"/>
+ <image source="\world_tileset.png" width="256" height="256"/>
  <tile id="0">
   <objectgroup>
    <object id="1" x="0" y="0" width="16" height="16"/>
