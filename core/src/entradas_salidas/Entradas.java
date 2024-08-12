@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 
 public class Entradas implements InputProcessor{
 
-	private boolean abajo = false, arriba = false, enter = false;
+	private boolean abajo = false, arriba = false, enter = false, derecha = false, izquierda = false;
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -90,5 +90,12 @@ public class Entradas implements InputProcessor{
 	public boolean isEnter() {
 		return enter;
 	}
+	public boolean isDerecha() {
+		return derecha;
+	}
+	public boolean isIzquierda() {
+		return izquierda;
+	}
+
 	
 }
