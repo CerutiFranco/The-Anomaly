@@ -12,7 +12,7 @@ public class Texto {
 	BitmapFont fuente;
 	int anchoPantalla = 1280;
 	int altoPantalla = 720;
-	
+
 	public Texto() {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fuentes/PressStart2P.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -28,10 +28,11 @@ public class Texto {
 	}
 
 	public void drawCenteredText(String text, float y) {
-        float textWidth = fuente.getRegion().getRegionWidth();
-        float textHeight = fuente.getCapHeight();
-        fuente.draw(Render.batch, text, (anchoPantalla - textWidth) / 2, y);
-    }
+		float textWidth = fuente.getRegion().getRegionWidth();
+		//float textHeight = fuente.getCapHeight();
+		fuente.draw(Render.batch, text, (anchoPantalla - textWidth) / 2, y);
+	}
+
 	public void setColor(Color color) {
 		fuente.setColor(color);
 	}

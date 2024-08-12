@@ -11,22 +11,22 @@ import utiles.Render;
 public class TheAnomaly extends Game {
 	Texture img;
 	Sprite sprite;
-	
+
 	@Override
-	public void create () {
-		
+	public void create() {
+
 		Render.app = this;
 		Render.batch = new SpriteBatch();
 		this.setScreen(new PantallaMenu());
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		super.render();
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 		Render.batch.dispose();
 	}
 }

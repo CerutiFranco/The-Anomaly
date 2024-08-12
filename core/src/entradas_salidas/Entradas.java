@@ -3,22 +3,28 @@ package entradas_salidas;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 
-public class Entradas implements InputProcessor{
+public class Entradas implements InputProcessor {
 
 	private boolean abajo = false, arriba = false, enter = false, derecha = false, izquierda = false;
 
 	@Override
 	public boolean keyDown(int keycode) {
 		// TODO Auto-generated method stub
-		
-		if(keycode==Keys.DOWN) {
-			abajo=true;
+
+		if (keycode == Keys.DOWN) {
+			abajo = true;
 		}
-		if(keycode==Keys.UP) {
-			arriba=true;
+		if (keycode == Keys.UP) {
+			arriba = true;
 		}
-		if(keycode==Keys.ENTER) {
-			enter=true;
+		if (keycode == Keys.ENTER) {
+			enter = true;
+		}
+		if (keycode == Keys.RIGHT) {
+			derecha = true;
+		}
+		if (keycode == Keys.LEFT) {
+			izquierda = true;
 		}
 		return false;
 	}
@@ -26,14 +32,20 @@ public class Entradas implements InputProcessor{
 	@Override
 	public boolean keyUp(int keycode) {
 		// TODO Auto-generated method stub
-		if(keycode==Keys.DOWN) {
-			abajo=false;
+		if (keycode == Keys.DOWN) {
+			abajo = false;
 		}
-		if(keycode==Keys.UP) {
-			arriba=false;
+		if (keycode == Keys.UP) {
+			arriba = false;
 		}
-		if(keycode==Keys.ENTER) {
-			enter=false;
+		if (keycode == Keys.ENTER) {
+			enter = false;
+		}
+		if (keycode == Keys.RIGHT) {
+			derecha = false;
+		}
+		if (keycode == Keys.LEFT) {
+			izquierda = false;
 		}
 		return false;
 	}
@@ -87,15 +99,16 @@ public class Entradas implements InputProcessor{
 	public boolean isArriba() {
 		return arriba;
 	}
+
 	public boolean isEnter() {
 		return enter;
 	}
+
 	public boolean isDerecha() {
 		return derecha;
 	}
+
 	public boolean isIzquierda() {
 		return izquierda;
 	}
-
-	
 }
