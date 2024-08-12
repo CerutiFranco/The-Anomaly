@@ -14,13 +14,8 @@ import elementos.Imagen;
 
 public class Jugador extends Actor{
 	
-	Texture aventurero = new Texture("personaje/adventurer-Sheet.png");
-	TextureRegion aventureroRegion = new TextureRegion(aventurero,350,407);
-    public Jugador(TextureRegion personaje){
-    	
-        
+	
+	
     }
-    public void dispose() {
-    	
-    }
-}
+  
+
