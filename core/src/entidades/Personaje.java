@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 
-public class Jugador extends Actor {
+public class Personaje extends Actor {
 
 	Texture aventurero = new Texture("personaje/adventurer-Sheet.png");
 	TextureRegion aventureroRegion = new TextureRegion(aventurero, 350, 407);
 
-	public Jugador(TextureRegion personaje) {
+	public Personaje(TextureRegion personaje) {
 
 	}
 
