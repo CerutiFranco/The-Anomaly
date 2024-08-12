@@ -35,6 +35,14 @@ public class Mapa {
 		return this.height;
 	}
 	
+	public float setEscalaMapa(float escalaMapa) {
+		return this.escalaMapa = escalaMapa;
+	}
+	
+	public float getEscalaMapa() {
+		return this.escalaMapa;
+	}
+	
 
 	public void ObtenerDimensiones() {
 		int mapWidthInTiles = mapaTiled.getProperties().get("width", Integer.class);

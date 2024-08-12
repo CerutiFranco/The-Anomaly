@@ -29,15 +29,13 @@ public class PantallaJuego implements Screen {
 	private Mapa map;
 	private OrthogonalTiledMapRenderer render;
 	private OrthographicCamera camara;
-	private float mapWidth, mapHeight;
-	private float escalaMapa = 1.5f;
 	@Override
 	public void show() {
 		
 		map = new Mapa("mapas/Nivel4.tmx", 1.4f);
 		map.ObtenerDimensiones();
 		
-		render = new OrthogonalTiledMapRenderer(map.getTiled(), escalaMapa);
+		render = new OrthogonalTiledMapRenderer(map.getTiled(), map.getEscalaMapa());
 
 		camara = new OrthographicCamera();
 		camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -62,7 +60,7 @@ public class PantallaJuego implements Screen {
 		quieto = temp[0][0];
 		Gdx.input.setInputProcessor(entradas);
 
-		camara.position.set(mapWidth / 2, mapHeight / 2, 0);
+		camara.position.set(map.getWidth() / 2, map.getHeight() / 2, 0);
 
 		camara.update();
 	}
