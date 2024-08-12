@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import entradas_salidas.Entradas;
 import utiles.Render;
+import elementos.Mapa;
 
 public class PantallaJuego implements Screen {
 	private Texture aventurero;
@@ -25,25 +26,18 @@ public class PantallaJuego implements Screen {
 	private float estadoTiempo;
 	private TextureRegion[] framesCaminar;
 	private TextureRegion quieto;
-	private TiledMap map;
+	private Mapa map;
 	private OrthogonalTiledMapRenderer render;
 	private OrthographicCamera camara;
 	private float mapWidth, mapHeight;
 	private float escalaMapa = 1.5f;
-
 	@Override
 	public void show() {
-		map = new TmxMapLoader().load("mapas/Nivel4.tmx");
-
-		render = new OrthogonalTiledMapRenderer(map, escalaMapa);
-
-		int mapWidthInTiles = map.getProperties().get("width", Integer.class);
-		int mapHeightInTiles = map.getProperties().get("height", Integer.class);
-		int tileWidth = map.getProperties().get("tilewidth", Integer.class);
-		int tileHeight = map.getProperties().get("tileheight", Integer.class);
-
-		mapWidth = mapWidthInTiles * escalaMapa * tileWidth;
-		mapHeight = mapHeightInTiles * escalaMapa * tileHeight;
+		
+		map = new Mapa("mapas/Nivel4.tmx", 1.4f);
+		map.ObtenerDimensiones();
+		
+		render = new OrthogonalTiledMapRenderer(map.getTiled(), escalaMapa);
 
 		camara = new OrthographicCamera();
 		camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -89,6 +83,16 @@ public class PantallaJuego implements Screen {
 			estadoTiempo += delta;
 			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
 			s.setRegion(frame);
+		} else if (entradas.isAbajo()) {
+			y -= 100 * delta;
+			estadoTiempo += delta;
+			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
+			s.setRegion(frame);
+		} else if (entradas.isArriba()) {
+			y += 100 * delta;
+			estadoTiempo += delta;
+			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
+			s.setRegion(frame);
 		} else {
 			s.setRegion(quieto);
 		}
@@ -131,7 +135,7 @@ public class PantallaJuego implements Screen {
 
 	@Override
 	public void dispose() {
-		map.dispose();
+		map.getTiled().dispose();
 		render.dispose();
 	}
 
