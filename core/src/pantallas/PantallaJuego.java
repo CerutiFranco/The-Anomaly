@@ -9,13 +9,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+
+import entradas_salidas.Direcciones;
 import entradas_salidas.Entradas;
 import utiles.Render;
 import elementos.Mapa;
 
 public class PantallaJuego implements Screen {
+	private Stage stage;
 	private Texture aventurero;
 	private TextureRegion aventureroRegion;
 	private Sprite s;
@@ -28,7 +32,12 @@ public class PantallaJuego implements Screen {
 	private Mapa map;
 	private OrthogonalTiledMapRenderer render;
 	private OrthographicCamera camara;
-
+	private TextureRegion frame;
+	
+	public PantallaJuego() {
+		this.stage = new Stage();
+		Gdx.input.setInputProcessor(stage);
+	}
 	@Override
 	public void show() {
 
@@ -73,31 +82,37 @@ public class PantallaJuego implements Screen {
 
 		x = s.getX();
 		y = s.getY();
+		Direcciones direccion = entradas.getDireccion();
 
-		if (entradas.isDerecha()) {
+		switch (direccion) {
+		case DERECHA:
 			x += 100 * delta;
+			frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
 			estadoTiempo += delta;
-			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-			s.setRegion(frame);
-		} else if (entradas.isIzquierda()) {
+			break;
+		case IZQUIERDA:
 			x -= 100 * delta;
+			frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
 			estadoTiempo += delta;
-			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-			s.setRegion(frame);
-		} else if (entradas.isAbajo()) {
+			break;
+		case ABAJO:
 			y -= 100 * delta;
+			frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
 			estadoTiempo += delta;
-			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-			s.setRegion(frame);
-		} else if (entradas.isArriba()) {
+			break;
+		case ARRIBA:
 			y += 100 * delta;
+			frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
 			estadoTiempo += delta;
-			TextureRegion frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-			s.setRegion(frame);
-		} else {
-			s.setRegion(quieto);
+			break;
+		case QUIETO:
+		default:
+			frame = quieto;
+			break;
 		}
+
 		s.setPosition(x, y);
+		s.setRegion(frame);
 
 		camara.position.set(s.getX() + s.getWidth() / 2, s.getY() + s.getHeight() / 2, 0);
 		camara.update();

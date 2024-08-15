@@ -26,12 +26,6 @@ public class Entradas implements InputProcessor {
 		if (keycode == Keys.LEFT) {
 			izquierda = true;
 		}
-		if (keycode == Keys.RIGHT) {
-			derecha = true;
-		}
-		if (keycode == Keys.LEFT) {
-			izquierda = true;
-		}
 		return false;
 	}
 
@@ -46,12 +40,6 @@ public class Entradas implements InputProcessor {
 		}
 		if (keycode == Keys.ENTER) {
 			enter = false;
-		}
-		if (keycode == Keys.RIGHT) {
-			derecha = false;
-		}
-		if (keycode == Keys.LEFT) {
-			izquierda = false;
 		}
 		if (keycode == Keys.RIGHT) {
 			derecha = false;
@@ -122,5 +110,13 @@ public class Entradas implements InputProcessor {
 
 	public boolean isIzquierda() {
 		return izquierda;
+	}
+	
+	public Direcciones getDireccion() {
+		if(isAbajo()) return Direcciones.ABAJO;
+		if(isArriba()) return Direcciones.ARRIBA;
+		if(isDerecha()) return Direcciones.DERECHA;
+		if(isIzquierda()) return Direcciones.IZQUIERDA;
+		return Direcciones.QUIETO;
 	}
 }
