@@ -9,7 +9,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("The Anomaly");
-		config.setResizable(false);
+		config.setResizable(true);
 		config.setWindowedMode(1280, 720);
 		new Lwjgl3Application(new TheAnomaly(), config);
 	}
