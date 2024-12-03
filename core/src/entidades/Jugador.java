@@ -12,9 +12,17 @@ import entradas_salidas.Direcciones;
 
 public class Jugador extends Personaje{
         private Animation<TextureRegion> caminarDerecha;
+        private Animation<TextureRegion> caminarIzquierda;
+        private Animation<TextureRegion> saltar;
         private float estadoTiempo;
         private TextureRegion quieto;
         private Sprite sprite;
+        private boolean saltando = false;
+        private boolean cayendo = false;
+        private float velocidadY = 0;
+        private final float gravedad = -500f; // Velocidad de caída
+        private final float velocidadSalto = 300f; // Velocidad inicial de salto
+        private float posicionYInicial;
 
         public Jugador() {
             Texture textura = new Texture("personaje/Spritesheet principal-0001 - copia.png");
@@ -22,13 +30,11 @@ public class Jugador extends Personaje{
 
             // Configurar animaciones
             TextureRegion[] framesCaminarDerecha = new TextureRegion[4];
-            int indice = 0;
-            for (int i = 2; i <3; i++) {
-                for (int j = 0; j < 4; j++) {
-                    framesCaminarDerecha[indice++] = temp[i][j];
-                }
-            }
-            caminarDerecha = new Animation<>(0.1f, framesCaminarDerecha);
+            TextureRegion[] framesCaminarIzquierda= new TextureRegion[4];
+            TextureRegion[] framesSaltar= new TextureRegion[4];
+            caminarDerecha = new Animation<>(0.1f, configuraranimacion(framesCaminarDerecha,3,temp));
+            caminarIzquierda= new Animation<>(0.1f, configuraranimacion(framesCaminarIzquierda,4,temp));
+            saltar= new Animation<>(0.3f, configuraranimacion(framesSaltar,5,temp));
             quieto = temp[0][0];
 
             // Configurar sprite
@@ -36,23 +42,36 @@ public class Jugador extends Personaje{
             sprite.setSize(100, 100);
             sprite.setPosition(0, 120);
         }
+        public TextureRegion[] configuraranimacion(TextureRegion[] framesAnimacion,int filaAnimacion,TextureRegion[][] temp){
+            int indice = 0;
+            for (int i = filaAnimacion-1; i <filaAnimacion; i++) {
+                for (int j = 0; j < 4; j++) {
+                    framesAnimacion[indice++] = temp[i][j];
+                }
+            }
+            return framesAnimacion;
+        }
 
         public void mover(Direcciones direccion, float delta,Array<Rectangle> rectangulos) {
             float x = sprite.getX();
             float y = sprite.getY();
             float nuevoX = x, nuevoY = y;
-            TextureRegion frame;
+            TextureRegion frame=quieto;
 
             switch (direccion) {
                 case DERECHA:
-                    x += 100 * delta;
-                    frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-                    estadoTiempo += delta;
+                    nuevoX += 100 * delta;
+                    if (!saltando && !cayendo) { // Solo usa la animación de caminar si está en el suelo
+                        frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
+                        estadoTiempo += delta;
+                    }
                     break;
                 case IZQUIERDA:
-                    x -= 100 * delta;
-                    frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-                    estadoTiempo += delta;
+                    nuevoX -= 100 * delta;
+                    if (!saltando && !cayendo) { // Solo usa la animación de caminar si está en el suelo
+                        frame = caminarIzquierda.getKeyFrame(estadoTiempo, true);
+                        estadoTiempo += delta;
+                    }
                     break;
                 case ABAJO:
                     y -= 100 * delta;
@@ -60,20 +79,44 @@ public class Jugador extends Personaje{
                     estadoTiempo += delta;
                     break;
                 case ARRIBA:
-                    y += 100 * delta;
-                    frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
+                    if (!saltando && !cayendo) { // Solo salta si no está en el aire
+                        saltando = true;
+                        velocidadY = velocidadSalto;
+                        posicionYInicial = y; // Guarda la posición inicial
+                        estadoTiempo = 0; // Resetea el tiempo de animación
+                    }
+                    frame = saltar.getKeyFrame(estadoTiempo,false); // Obtén la animación del salto
                     estadoTiempo += delta;
                     break;
                 case QUIETO:
                 default:
-                    frame = quieto;
+                    if (!saltando && !cayendo) { // Quieto solo aplica si no está en el aire
+                        frame = quieto;
+                    }
                     break;
             }
-            if (!verificarColision(nuevoX, nuevoY, rectangulos)) {
-                sprite.setPosition(nuevoX, nuevoY);
+            if (saltando || cayendo) {
+                velocidadY += gravedad * delta; // Aplica gravedad
+                nuevoY += velocidadY * delta; // Actualiza la posición vertical
+
+                // Si llega a la posición inicial, detén el salto
+                if (nuevoY <= posicionYInicial) {
+                    nuevoY = posicionYInicial;
+                    velocidadY = 0;
+                    saltando = false;
+                    cayendo = false; // Vuelve a estar en reposo
+                } else if (velocidadY < 0) {
+                    cayendo = true; // Cambia a estado de caída si la velocidad es negativa
+                }
+                frame = saltar.getKeyFrame(estadoTiempo, false);
+                estadoTiempo += delta; // Incrementa el tiempo de animación
             }
 
-            sprite.setPosition(x, y);
+            if (!verificarColision(nuevoX, nuevoY, rectangulos)) {
+                sprite.setPosition(nuevoX, nuevoY);
+            }else {
+                sprite.setPosition(x, y); // Si hay colisión, mantén la posición anterior
+            }
             sprite.setRegion(frame);
         }
 
