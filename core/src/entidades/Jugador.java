@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import entradas_salidas.Direcciones;
 
 
@@ -19,14 +21,14 @@ public class Jugador extends Personaje{
             TextureRegion[][] temp = new TextureRegion(textura).split(32, 32);
 
             // Configurar animaciones
-            TextureRegion[] framesCaminar = new TextureRegion[4];
+            TextureRegion[] framesCaminarDerecha = new TextureRegion[4];
             int indice = 0;
             for (int i = 2; i <3; i++) {
                 for (int j = 0; j < 4; j++) {
-                    framesCaminar[indice++] = temp[i][j];
+                    framesCaminarDerecha[indice++] = temp[i][j];
                 }
             }
-            caminarDerecha = new Animation<>(0.1f, framesCaminar);
+            caminarDerecha = new Animation<>(0.1f, framesCaminarDerecha);
             quieto = temp[0][0];
 
             // Configurar sprite
@@ -35,9 +37,10 @@ public class Jugador extends Personaje{
             sprite.setPosition(0, 120);
         }
 
-        public void mover(Direcciones direccion, float delta) {
+        public void mover(Direcciones direccion, float delta,Array<Rectangle> rectangulos) {
             float x = sprite.getX();
             float y = sprite.getY();
+            float nuevoX = x, nuevoY = y;
             TextureRegion frame;
 
             switch (direccion) {
@@ -66,6 +69,9 @@ public class Jugador extends Personaje{
                     frame = quieto;
                     break;
             }
+            if (!verificarColision(nuevoX, nuevoY, rectangulos)) {
+                sprite.setPosition(nuevoX, nuevoY);
+            }
 
             sprite.setPosition(x, y);
             sprite.setRegion(frame);
@@ -78,6 +84,16 @@ public class Jugador extends Personaje{
         public Sprite getSprite() {
             return sprite;
         }
+    public boolean verificarColision(float x, float y, Array<Rectangle> rectangulos) {
+        Rectangle rectJugador = new Rectangle(x, y, sprite.getWidth(), sprite.getHeight());
+
+        for (Rectangle rect : rectangulos) {
+            if (rectJugador.overlaps(rect)) {
+                return true; // Hay colisión
+            }
+        }
+        return false; // No hay colisión
+    }
 
 
 	
