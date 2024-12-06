@@ -13,6 +13,7 @@ import entradas_salidas.Entradas;
 import utiles.Render;
 import elementos.Mapa;
 
+
 public class PantallaJuego implements Screen {
 	private Entradas entradas;
 	private Mapa map;
@@ -21,13 +22,13 @@ public class PantallaJuego implements Screen {
 	private Array<Rectangle> rectangulosColision;
 	private Camara camara;
 
-
 	public PantallaJuego() {
 		this.jugador = new Jugador();
 		this.entradas = new Entradas();
 		Gdx.input.setInputProcessor(entradas);
-		camara=new Camara();
+		this.camara = new Camara();
 		rectangulosColision = new Array<>();
+
 	}
 	@Override
 	public void show() {
@@ -43,6 +44,7 @@ public class PantallaJuego implements Screen {
 		Direcciones direccion = entradas.getDireccion();
 		jugador.mover(direccion, delta,rectangulosColision);
 
+
 		Render.batch.begin();
 		camara.actualizar();
 		render.setView(camara.getCamara());
@@ -55,7 +57,6 @@ public class PantallaJuego implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 		camara.resize(width, height);
 	}
 

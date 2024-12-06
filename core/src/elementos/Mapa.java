@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class Mapa {
 	private float height;
@@ -12,12 +13,13 @@ public class Mapa {
 	private TiledMap mapaTiled;
 	private String ruta;
 	private TmxMapLoader mapLoader;
-
+	private OrthogonalTiledMapRenderer mapRenderer;
 	public Mapa(String ruta, float escalaMapa) {
 		this.escalaMapa = escalaMapa;
 		this.ruta = ruta;
 		this.mapLoader = new TmxMapLoader();
 		this.mapaTiled = cargarMapa();
+		this.mapRenderer = new OrthogonalTiledMapRenderer(mapaTiled, escalaMapa / 32);
 		cargasCapas();
 	}
 
