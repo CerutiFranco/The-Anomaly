@@ -40,7 +40,7 @@ public class Jugador extends Personaje{
             // Configurar sprite
             sprite = new Sprite(quieto);
             sprite.setSize(100, 100);
-            sprite.setPosition(0, 120);
+            sprite.setPosition(0, 180);
         }
         public TextureRegion[] configuraranimacion(TextureRegion[] framesAnimacion,int filaAnimacion,TextureRegion[][] temp){
             int indice = 0;
