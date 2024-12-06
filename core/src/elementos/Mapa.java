@@ -2,6 +2,8 @@ package elementos;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.MapLayer;
 
 public class Mapa {
 	private float height;
@@ -16,11 +18,42 @@ public class Mapa {
 		this.ruta = ruta;
 		this.mapLoader = new TmxMapLoader();
 		this.mapaTiled = cargarMapa();
+		cargasCapas();
 	}
-	
+
 	public Mapa(String ruta) {
 		this(ruta, 1.0f);
 	}
+
+	private void cargasCapas() {
+		for (MapLayer layer : this.mapaTiled.getLayers()) {
+			if (layer instanceof TiledMapTileLayer) {
+				TiledMapTileLayer tileLayer = (TiledMapTileLayer) layer;
+				procesarCapa(tileLayer);
+			}
+		}
+	}
+
+	private void procesarCapa(TiledMapTileLayer layer) {
+		float layerWidth = layer.getWidth() * layer.getTileWidth() * this.escalaMapa;
+		float layerHeight = layer.getHeight() * layer.getTileHeight() * this.escalaMapa;
+		System.out.println("Procesando capa: " + layer.getName());
+		System.out.println("Dimensiones: " + layerWidth + " x " + layerHeight);
+
+		for (int x = 0; x < layer.getWidth(); x++) {
+			for (int y = 0; y < layer.getHeight(); y++) {
+				TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+				if (cell != null && cell.getTile() != null) {
+					boolean isBlocked = cell.getTile().getProperties().containsKey("blocked");
+					if (isBlocked) {
+						System.out.println("Tile bloqueado en [" + x + ", " + y + "]");
+					}
+				}
+			}
+		}
+	}
+
+
 
 	public void setSize(float width, float height) {
 		this.width = width;
@@ -41,17 +74,6 @@ public class Mapa {
 	
 	public float getEscalaMapa() {
 		return this.escalaMapa;
-	}
-	
-
-	public void ObtenerDimensiones() {
-		int mapWidthInTiles = mapaTiled.getProperties().get("width", Integer.class);
-		int mapHeightInTiles = mapaTiled.getProperties().get("height", Integer.class);
-		int tileWidth = mapaTiled.getProperties().get("tilewidth", Integer.class);
-		int tileHeight = mapaTiled.getProperties().get("tileheight", Integer.class);
-
-		this.width = mapWidthInTiles * this.escalaMapa * tileWidth;
-		this.height = mapHeightInTiles * this.escalaMapa * tileHeight;
 	}
 
 	public TiledMap cargarMapa() {

@@ -37,12 +37,13 @@ public class PantallaJuego implements Screen {
 	@Override
 	public void show() {
 		Personaje jugador= new Jugador();
-		map = new Mapa("mapas/Nivel4.tmx", 1.4f);
-		map.ObtenerDimensiones();
+
+		map = new Mapa("mapas/Mapa prueba.tmx");
 
 		render = new OrthogonalTiledMapRenderer(map.getTiled(), map.getEscalaMapa());
 
 		camara = new OrthographicCamera();
+
 		camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
@@ -55,8 +56,9 @@ public class PantallaJuego implements Screen {
 		rectangulosColision = new Array<>();
 
 		// Carga los objetos de la capa de colisión
-		if (map.getTiled().getLayers().get("Collisions") != null) {
-			for (MapObject object : map.getTiled().getLayers().get("Collisions").getObjects()) {
+
+		if (map.getTiled().getLayers().get("Suelo") != null) {
+			for (MapObject object : map.getTiled().getLayers().get("Suelo").getObjects()) {
 				if (object instanceof RectangleMapObject) {
 					Rectangle rect = ((RectangleMapObject) object).getRectangle();
 					rectangulosColision.add(rect);
@@ -92,8 +94,8 @@ public class PantallaJuego implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		camara.viewportHeight = height;
+		camara.viewportWidth = width;
 	}
 
 	@Override

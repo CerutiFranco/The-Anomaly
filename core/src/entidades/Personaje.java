@@ -5,6 +5,7 @@ package entidades;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -15,18 +16,25 @@ public class Personaje extends Actor {
 	protected Vector2 velocidad; // Para movimiento
 	protected boolean enElSuelo;
 
+	protected Rectangle hitbox;
+
 	public Personaje() {
 		tiempoEstado = 0f;
 		velocidad = new Vector2(0, 0);
 		enElSuelo = true;
+
+		hitbox = new Rectangle(getX(), getY(), getWidth(), getHeight());
 	}
 	@Override
 	public void act(float delta) {
 		super.act(delta);
 		tiempoEstado += delta;
 
+		float newX = getX() + velocidad.x * delta;
+		float newY = getY() + velocidad.y * delta;
+
 		// Actualizar posición con base en la velocidad
-		moveBy(velocidad.x * delta, velocidad.y * delta);
+		//moveBy(velocidad.x * delta, velocidad.y * delta);
 
 		// Aplicar gravedad (si es necesario)
 		if (!enElSuelo) {
@@ -34,7 +42,7 @@ public class Personaje extends Actor {
 		}
 
 		// Evitar que caiga más allá del suelo
-		if (getY() <= 0) {
+		if (newY <= 0) {
 			setY(0);
 			enElSuelo = true;
 			velocidad.y = 0;
@@ -46,6 +54,19 @@ public class Personaje extends Actor {
 			TextureRegion frame = animacionActual.getKeyFrame(tiempoEstado, true);
 			batch.draw(frame, getX(), getY(), getWidth(), getHeight());
 		}
+	}
+
+	public Rectangle getHitbox() {
+		return hitbox;
+	}
+
+	public boolean verificarColision(Rectangle rectanguloColision) {
+		return hitbox.overlaps(rectanguloColision);
+	}
+
+	private void actualizarHitBox() {
+		hitbox.setPosition(getX(), getY());
+		hitbox.setSize(getWidth(), getHeight());
 	}
 
 }
