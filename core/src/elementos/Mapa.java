@@ -20,7 +20,7 @@ public class Mapa {
 		this.mapLoader = new TmxMapLoader();
 		this.mapaTiled = cargarMapa();
 		this.mapRenderer = new OrthogonalTiledMapRenderer(mapaTiled, escalaMapa / 32);
-		cargasCapas();
+		//cargasCapas();
 	}
 
 	public Mapa(String ruta) {
