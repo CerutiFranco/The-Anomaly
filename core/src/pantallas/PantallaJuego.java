@@ -4,6 +4,8 @@ import camaras.Camara;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -35,8 +37,15 @@ public class PantallaJuego implements Screen {
 		map = new Mapa("mapas/Mapa prueba.tmx");
 		render = new OrthogonalTiledMapRenderer(map.getTiled(), map.getEscalaMapa());
 		Gdx.input.setInputProcessor(entradas);
+		rectangulosColision = new Array<>();
+		for (MapObject object : map.getTiled().getLayers().get("Colisiones").getObjects()) {
+			if (object instanceof RectangleMapObject) {
+				Rectangle rect = ((RectangleMapObject) object).getRectangle();
+				rectangulosColision.add(rect);
+			}
+		}
 	}
-
+	
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);

@@ -20,9 +20,10 @@ public class Jugador extends Personaje{
         private boolean saltando = false;
         private boolean cayendo = false;
         private float velocidadY = 0;
-        private final float gravedad = -500f; // Velocidad de caída
-        private final float velocidadSalto = 300f; // Velocidad inicial de salto
+        private final float gravedad = -500f; 
+        private final float velocidadSalto = 300f;
         private float posicionYInicial;
+        private boolean enElAire = false;
 
         public Jugador() {
             Texture textura = new Texture("personaje/Spritesheet principal-0001 - copia.png");
@@ -52,7 +53,7 @@ public class Jugador extends Personaje{
             return framesAnimacion;
         }
 
-        public void mover(Direcciones direccion, float delta,Array<Rectangle> rectangulos) {
+        public void mover(Direcciones direccion, float delta,Array<Rectangle> colisionables) {
             float x = sprite.getX();
             float y = sprite.getY();
             float nuevoX = x, nuevoY = y;
@@ -79,46 +80,85 @@ public class Jugador extends Personaje{
                     estadoTiempo += delta;
                     break;
                 case ARRIBA:
-                    if (!saltando && !cayendo) { // Solo salta si no está en el aire
-                        saltando = true;
+                    if (!enElAire) { // Solo salta si no está en el aire
+                        enElAire= true;
                         velocidadY = velocidadSalto;
-                        posicionYInicial = y; // Guarda la posición inicial
-                        estadoTiempo = 0; // Resetea el tiempo de animación
                     }
                     frame = saltar.getKeyFrame(estadoTiempo,false); // Obtén la animación del salto
                     estadoTiempo += delta;
                     break;
                 case QUIETO:
                 default:
-                    if (!saltando && !cayendo) { // Quieto solo aplica si no está en el aire
+                    if (!enElAire) { // Quieto solo aplica si no está en el aire
                         frame = quieto;
                     }
                     break;
             }
-            if (saltando || cayendo) {
-                velocidadY += gravedad * delta; // Aplica gravedad
-                nuevoY += velocidadY * delta; // Actualiza la posición vertical
+            if (enElAire) {
+                velocidadY += gravedad * delta;
+                nuevoY += velocidadY * delta;
 
-                // Si llega a la posición inicial, detén el salto
-                if (nuevoY <= posicionYInicial) {
-                    nuevoY = posicionYInicial;
+                // Verificar si está sobre una plataforma
+                if (verificarColision(nuevoX, nuevoY - 1, colisionables)) { // Chequeo un pixel por debajo
+                    enElAire = false;
                     velocidadY = 0;
-                    saltando = false;
-                    cayendo = false; // Vuelve a estar en reposo
-                } else if (velocidadY < 0) {
-                    cayendo = true; // Cambia a estado de caída si la velocidad es negativa
+                    nuevoY = ajustarAPlataforma(nuevoX, nuevoY, colisionables); // Ajustar al bloque
                 }
-                frame = saltar.getKeyFrame(estadoTiempo, false);
-                estadoTiempo += delta; // Incrementa el tiempo de animación
+            } else {
+                // Verificar si cae (no hay plataforma debajo)
+                if (!verificarColision(nuevoX, nuevoY - 1, colisionables)) {
+                    enElAire = true;
+                }
             }
 
-            if (!verificarColision(nuevoX, nuevoY, rectangulos)) {
-                sprite.setPosition(nuevoX, nuevoY);
-            }else {
-                sprite.setPosition(x, y); // Si hay colisión, mantén la posición anterior
+            // Actualizar posición solo si no hay colisión
+            if (verificarColision(nuevoX, y, colisionables)) {
+                nuevoX = x; // Si hay colisión horizontal, no mover en X
             }
+            
+            sprite.setPosition(nuevoX, nuevoY);
             sprite.setRegion(frame);
+    }
+    private float ajustarAPlataforma(float x, float y, Array<Rectangle> colisionables) {
+        float hitboxWidth = 17f;
+        float hitboxHeight = 27f;
+        float offsetX = (sprite.getWidth() - hitboxWidth) / 2;
+        float offsetY = (sprite.getHeight() - hitboxHeight) / 2;
+
+        Rectangle rectJugador = new Rectangle(
+                x + offsetX,
+                y + offsetY,
+                hitboxWidth,
+                hitboxHeight
+        );
+
+        for (Rectangle rect : colisionables) {
+            if (rectJugador.overlaps(rect)) {
+                // Ajustar la posición Y considerando el tamaño del sprite y el offset
+                return rect.getY() + rect.getHeight() - offsetY;
+            }
         }
+        return y;
+    }
+
+    public boolean verificarColision(float x, float y, Array<Rectangle> colisionables) {
+        float hitboxWidth = 17f; // Ancho real del personaje
+        float hitboxHeight = 27f; // Alto real del personaje
+        float offsetX = (sprite.getWidth() - hitboxWidth) / 2; // Centro horizontal del sprite
+        float offsetY = (sprite.getHeight() - hitboxHeight) / 2; // Centro vertical del sprite
+
+        // Crear el rectángulo de colisión con las dimensiones ajustadas
+        Rectangle rectJugador = new Rectangle(x + offsetX, y + offsetY, hitboxWidth, hitboxHeight);
+        for (Rectangle rect : colisionables) {
+            if (rectJugador.overlaps(rect)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
         public void dibujar(SpriteBatch batch) {
             sprite.draw(batch);
@@ -127,16 +167,7 @@ public class Jugador extends Personaje{
         public Sprite getSprite() {
             return sprite;
         }
-    public boolean verificarColision(float x, float y, Array<Rectangle> rectangulos) {
-        Rectangle rectJugador = new Rectangle(x, y, sprite.getWidth(), sprite.getHeight());
 
-        for (Rectangle rect : rectangulos) {
-            if (rectJugador.overlaps(rect)) {
-                return true; // Hay colisión
-            }
-        }
-        return false; // No hay colisión
-    }
 
 
 	
