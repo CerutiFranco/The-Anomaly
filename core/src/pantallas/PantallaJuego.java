@@ -34,7 +34,7 @@ public class PantallaJuego implements Screen {
 	}
 	@Override
 	public void show() {
-		map = new Mapa("mapas/mapa total.tmx");
+		map = new Mapa("mapas/Mapa prueba.tmx");
 		render = new OrthogonalTiledMapRenderer(map.getTiled(), map.getEscalaMapa());
 		Gdx.input.setInputProcessor(entradas);
 		rectangulosColision = new Array<>();
