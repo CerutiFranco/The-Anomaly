@@ -100,9 +100,14 @@ public class Jugador extends Personaje{
 
                 // Verificar si está sobre una plataforma
                 if (verificarColision(nuevoX, nuevoY - 1, colisionables)) { // Chequeo un pixel por debajo
-                    enElAire = false;
-                    velocidadY = 0;
-                    nuevoY = ajustarAPlataforma(nuevoX, nuevoY, colisionables); // Ajustar al bloque
+                    if(velocidadY > 0) {
+                        velocidadY = 0;
+                        nuevoY = y;
+                    } else {
+                        enElAire = false;
+                        velocidadY = 0;
+                        nuevoY = ajustarAPlataforma(nuevoX, nuevoY, colisionables); // Ajustar al bloque
+                    }
                 }
             } else {
                 // Verificar si cae (no hay plataforma debajo)
@@ -134,6 +139,9 @@ public class Jugador extends Personaje{
 
         for (Rectangle rect : colisionables) {
             if (rectJugador.overlaps(rect)) {
+                if(y + hitboxHeight <= rect.getY()){
+                    return y;
+                }
                 // Ajustar la posición Y considerando el tamaño del sprite y el offset
                 return rect.getY() + rect.getHeight() - offsetY;
             }
