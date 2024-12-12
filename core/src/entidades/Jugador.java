@@ -57,7 +57,7 @@ public class Jugador extends Personaje{
             float x = sprite.getX();
             float y = sprite.getY();
             float nuevoX = x, nuevoY = y;
-            TextureRegion frame=quieto;
+            TextureRegion frame = quieto;
 
             switch (direccion) {
                 case DERECHA:
@@ -66,6 +66,7 @@ public class Jugador extends Personaje{
                         frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
                         estadoTiempo += delta;
                     }
+
                     break;
                 case IZQUIERDA:
                     nuevoX -= 100 * delta;
@@ -73,11 +74,7 @@ public class Jugador extends Personaje{
                         frame = caminarIzquierda.getKeyFrame(estadoTiempo, true);
                         estadoTiempo += delta;
                     }
-                    break;
-                case ABAJO:
-                    y -= 100 * delta;
-                    frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
-                    estadoTiempo += delta;
+
                     break;
                 case ARRIBA:
                     if (!enElAire) { // Solo salta si no está en el aire
@@ -94,31 +91,36 @@ public class Jugador extends Personaje{
                     }
                     break;
             }
+
             if (enElAire) {
                 velocidadY += gravedad * delta;
                 nuevoY += velocidadY * delta;
+            }
 
-                // Verificar si está sobre una plataforma
-                if (verificarColision(nuevoX, nuevoY - 1, colisionables)) { // Chequeo un pixel por debajo
-                    if(velocidadY > 0) {
-                        velocidadY = 0;
-                        nuevoY = y;
-                    } else {
-                        enElAire = false;
-                        velocidadY = 0;
-                        nuevoY = ajustarAPlataforma(nuevoX, nuevoY, colisionables); // Ajustar al bloque
-                    }
+            // Verificar si está sobre una plataforma
+            // Colisiones verticales
+            if (verificarColision(nuevoX, nuevoY, colisionables)) {
+                if (velocidadY > 0) { // Golpeando la parte inferior de una plataforma
+                    velocidadY = 0;
+                    nuevoY = y;
+                } else if (velocidadY < 0) { // Aterrizando en una plataforma
+                    enElAire = false;
+                    velocidadY = 0;
+                    nuevoY = ajustarAPlataforma(nuevoX, nuevoY, colisionables);
                 }
-            } else {
-                // Verificar si cae (no hay plataforma debajo)
-                if (!verificarColision(nuevoX, nuevoY - 1, colisionables)) {
-                    enElAire = true;
-                }
+            } else if (!verificarColision(nuevoX, nuevoY - 1, colisionables)) {
+                enElAire = true; // Empezar a caer si no hay soporte debajo
             }
 
             // Actualizar posición solo si no hay colisión
+            //colisiones horizontales
             if (verificarColision(nuevoX, y, colisionables)) {
-                nuevoX = x; // Si hay colisión horizontal, no mover en X
+                if(nuevoX > x) {
+                    nuevoX = ajustarALadoIzquierdo(x, colisionables);
+                } else if (nuevoX < x) {
+                    nuevoX = ajustarALadoDerecho(x, colisionables);
+                }
+                //nuevoX = x; // Si hay colisión horizontal, no mover en X
             }
             
             sprite.setPosition(nuevoX, nuevoY);
@@ -148,6 +150,37 @@ public class Jugador extends Personaje{
         }
         return y;
     }
+
+    private float ajustarALadoIzquierdo(float x, Array<Rectangle> colisionables) {
+        float hitboxWidth = 17f;
+        float hitboxHeight = 27f;
+        float offsetX = (sprite.getWidth() - hitboxWidth) / 2;
+        float offsetY = (sprite.getHeight() - hitboxHeight) / 2;
+
+        Rectangle rectJugador = new Rectangle(x + offsetX, sprite.getY() + offsetY, hitboxWidth, hitboxHeight);
+        for (Rectangle rect : colisionables) {
+            if (rectJugador.overlaps(rect)) {
+                return rect.getX() - hitboxWidth - offsetX;
+            }
+        }
+        return x;
+    }
+
+    private float ajustarALadoDerecho(float x, Array<Rectangle> colisionables) {
+        float hitboxWidth = 17f;
+        float hitboxHeight = 27f;
+        float offsetX = (sprite.getWidth() - hitboxWidth) / 2;
+        float offsetY = (sprite.getHeight() - hitboxHeight) / 2;
+
+        Rectangle rectJugador = new Rectangle(x + offsetX, sprite.getY() + offsetY, hitboxWidth, hitboxHeight);
+        for (Rectangle rect : colisionables) {
+            if (rectJugador.overlaps(rect)) {
+                return rect.getX() + rect.getWidth() - offsetX;
+            }
+        }
+        return x;
+    }
+
 
     public boolean verificarColision(float x, float y, Array<Rectangle> colisionables) {
         float hitboxWidth = 17f; // Ancho real del personaje

@@ -116,7 +116,6 @@ public class Entradas implements InputProcessor {
 	}
 	
 	public Direcciones getDireccion() {
-		if(isAbajo()) return Direcciones.ABAJO;
 		if(isArriba()) return Direcciones.ARRIBA;
 		if(isDerecha()) return Direcciones.DERECHA;
 		if(isIzquierda()) return Direcciones.IZQUIERDA;

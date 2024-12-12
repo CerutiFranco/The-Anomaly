@@ -55,6 +55,7 @@ public class PantallaJuego implements Screen {
 			Render.cambiarPantalla(new PantallaPausa(this,camara));
 		}
 		Direcciones direccion = entradas.getDireccion();
+
 		jugador.mover(direccion, delta,rectangulosColision);
 
 
