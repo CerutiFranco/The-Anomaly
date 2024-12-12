@@ -1,6 +1,7 @@
 package pantallas;
 
 import camaras.Camara;
+import camaras.PosicionesCamara;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -58,6 +59,12 @@ public class PantallaJuego implements Screen {
 
 		jugador.mover(direccion, delta,rectangulosColision);
 
+		float limiteDerechoViewport = camara.getCamara().position.x + camara.getViewportWidth() / 2;
+		float jugadorDerecha = jugador.getSprite().getX() + jugador.getSprite().getWidth();
+
+		if (jugadorDerecha >= limiteDerechoViewport) {
+			camara.moverACamaraSiguiente(); // Cambiar la posición de la cámara según tu lógica
+		}
 
 		Render.batch.begin();
 		camara.actualizar();
@@ -66,6 +73,7 @@ public class PantallaJuego implements Screen {
 
 		jugador.dibujar(Render.batch);
 		Render.batch.end();
+
 
 	}
 

@@ -22,7 +22,6 @@ public class Jugador extends Personaje{
         private float velocidadY = 0;
         private final float gravedad = -500f; 
         private final float velocidadSalto = 300f;
-        private float posicionYInicial;
         private boolean enElAire = false;
 
         public Jugador() {
@@ -42,7 +41,9 @@ public class Jugador extends Personaje{
             sprite = new Sprite(quieto);
             sprite.setSize(80, 80);
             sprite.setPosition(0, 180);
+
         }
+
         public TextureRegion[] configuraranimacion(TextureRegion[] framesAnimacion,int filaAnimacion,TextureRegion[][] temp){
             int indice = 0;
             for (int i = filaAnimacion-1; i <filaAnimacion; i++) {
@@ -124,6 +125,7 @@ public class Jugador extends Personaje{
             }
             
             sprite.setPosition(nuevoX, nuevoY);
+            this.setPosition(nuevoX, nuevoY);
             sprite.setRegion(frame);
     }
     private float ajustarAPlataforma(float x, float y, Array<Rectangle> colisionables) {
@@ -209,6 +211,10 @@ public class Jugador extends Personaje{
             return sprite;
         }
 
+
+    public float getPosicionX() {
+        return getX();
+    }
 
 
 	
