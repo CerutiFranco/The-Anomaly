@@ -3,6 +3,7 @@ package elementos;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
@@ -27,10 +28,11 @@ public class Texto {
 		generator.dispose();
 	}
 
-	public void drawCenteredText(String text, float y) {
-		float textWidth = fuente.getRegion().getRegionWidth();
-		//float textHeight = fuente.getCapHeight();
-		fuente.draw(Render.batch, text, (anchoPantalla - textWidth) / 2, y);
+	public void drawCenteredText(String text, float x, float y, float anchoDisponible) {
+		GlyphLayout layout = new GlyphLayout(fuente, text); // Medir el texto
+		float textWidth = layout.width; // Obtener el ancho real del texto
+		float posX = x + (anchoDisponible - textWidth) / 2; // Calcular posición centrada
+		fuente.draw(Render.batch, text, posX, y); // Dibujar texto
 	}
 
 	public void setColor(Color color) {

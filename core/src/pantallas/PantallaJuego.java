@@ -31,6 +31,7 @@ public class PantallaJuego implements Screen {
 		this.camara = new Camara();
 		rectangulosColision = new Array<>();
 
+
 	}
 	@Override
 	public void show() {
@@ -50,6 +51,9 @@ public class PantallaJuego implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
+			Render.cambiarPantalla(new PantallaPausa(this,camara));
+		}
 		Direcciones direccion = entradas.getDireccion();
 		jugador.mover(direccion, delta,rectangulosColision);
 

@@ -14,11 +14,9 @@ import utiles.Render;
 public class PantallaMenu implements Screen {
 
 	Imagen fondo;
-	BitmapFont fuente;
 
 	final int anchoPantalla = 1280;
 	final int altoPantalla = 720;
-	int hola = 0;
 
 	Entradas entradas = new Entradas();
 	int opc = 1;
@@ -44,11 +42,12 @@ public class PantallaMenu implements Screen {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		Render.batch.begin();
+
 		fondo.dibujar();
 
-		textos[0].drawCenteredText(texto1, altoPantalla / 2 + 100);
-		textos[1].drawCenteredText(texto2, altoPantalla / 2 + 50);
-		textos[2].drawCenteredText(texto3, altoPantalla / 2);
+		textos[0].drawCenteredText(texto1,0, altoPantalla / 2 + 100,anchoPantalla);
+		textos[1].drawCenteredText(texto2,0, altoPantalla / 2 + 50,anchoPantalla);
+		textos[2].drawCenteredText(texto3,0, altoPantalla / 2,anchoPantalla);
 		Render.batch.end();
 
 		tiempo += delta;
@@ -83,6 +82,14 @@ public class PantallaMenu implements Screen {
 			if (entradas.isEnter()) {
 				Render.app.setScreen(new PantallaJuego());
 			}
+			break;
+			case 2:
+				break;
+			case 3:
+				if (entradas.isEnter()) {
+					Gdx.app.exit();
+				}
+				break;
 		}
 	}
 
