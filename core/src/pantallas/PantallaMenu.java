@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import elementos.Imagen;
 import elementos.Texto;
 import entradas_salidas.Entradas;
@@ -15,24 +16,28 @@ public class PantallaMenu implements Screen {
 
 	Imagen fondo;
 
-	final int anchoPantalla = 1280;
-	final int altoPantalla = 720;
+	final float anchoPantalla = 1280;
+	final float altoPantalla = 720;
 
 	Entradas entradas = new Entradas();
 	int opc = 1;
-	String texto1 = "Comenzar partida";
-	String texto2 = "Opciones";
-	String texto3 = "Salir";
+	String opciones[] = {"Comenzar partida", "Opciones", "Salir"};
 	private Texto[] textos = new Texto[3];
 	public float tiempo = 0;
+
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
 		fondo = new Imagen("selva.jpg");
 		fondo.setSize(anchoPantalla, altoPantalla);
+
+		int avance = 40;
+
 		for (int i = 0; i < textos.length; i++) {
 			textos[i] = new Texto();
+			textos[i].setTexto(opciones[i]);
+			textos[i].setPosition((anchoPantalla/2) - (textos[i].getWidth()/2), (altoPantalla/2) + (textos[0].getHeight()/2) - (textos[i].getHeight()*i) + (avance*i));
 		}
 
 		Gdx.input.setInputProcessor(entradas);
@@ -40,57 +45,64 @@ public class PantallaMenu implements Screen {
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
 		Render.batch.begin();
 
 		fondo.dibujar();
 
-		textos[0].drawCenteredText(texto1,0, altoPantalla / 2 + 100,anchoPantalla);
-		textos[1].drawCenteredText(texto2,0, altoPantalla / 2 + 50,anchoPantalla);
-		textos[2].drawCenteredText(texto3,0, altoPantalla / 2,anchoPantalla);
+		for (int i = 0; i < textos.length; i++) {
+			textos[i].drawCenteredText(opciones[i], 0, (altoPantalla / 2 +100) - (i * 50), anchoPantalla);
+		}
 		Render.batch.end();
 
-		tiempo += delta;
-		if (entradas.isAbajo()) {
-			if (tiempo > 0.2f) {
-				tiempo = 0;
-				opc++;
-				if (opc > textos.length) {
-					opc = 1;
-				}
-			}
-		}
-		if (entradas.isArriba()) {
-			if (tiempo > 0.2f) {
-				tiempo = 0;
-				opc--;
-				if (opc < 1) {
-					opc = textos.length;
-				}
+		int mouseX = entradas.getMouseX();
+		int mouseY = entradas.getMouseY();
+		for (int i = 0; i < textos.length; i++) {
+			float textoX = (anchoPantalla / 2) - (textos[i].getWidth() / 2);
+			float textoY = (altoPantalla / 2 + 100) - (i * 50);
+
+			// Comprobar si el mouse está sobre el texto
+			if (mouseX >= textoX && mouseX <= textoX + textos[i].getWidth() &&
+					mouseY >= textoY - textos[i].getHeight() && mouseY <= textoY) {
+				opc = i + 1; // Ajustar la opción seleccionada
 			}
 		}
 
 		for (int i = 0; i < textos.length; i++) {
-			if (i == opc - 1) {
+			if (i == (opc - 1)) {
 				textos[i].setColor(Color.SKY);
 			} else {
 				textos[i].setColor(Color.WHITE);
 			}
 		}
+
+		tiempo += delta;
+		if (entradas.isAbajo() && tiempo > 0.2f) {
+			tiempo = 0;
+			opc = (opc % textos.length) + 1;
+		}
+		if (entradas.isArriba() && tiempo > 0.2f) {
+			tiempo = 0;
+			opc = (opc - 2 + textos.length) % textos.length + 1;
+		}
+
 		switch (opc) {
 		case 1:
-			if (entradas.isEnter()) {
+			if (entradas.isEnter() || entradas.isClick()) {
 				Render.app.setScreen(new PantallaJuego());
 			}
 			break;
 			case 2:
 				break;
 			case 3:
-				if (entradas.isEnter()) {
+				if (entradas.isEnter() || entradas.isClick()) {
 					Gdx.app.exit();
 				}
 				break;
 		}
+
+
+
+
 	}
 
 	@Override

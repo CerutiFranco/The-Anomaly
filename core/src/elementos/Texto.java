@@ -9,10 +9,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 
 import utiles.Render;
 
+import java.awt.*;
+
 public class Texto {
 	BitmapFont fuente;
-	int anchoPantalla = 1280;
-	int altoPantalla = 720;
+	private float x = 0;
+	private float y = 0;
+	GlyphLayout layout;
+	private String texto = "";
 
 	public Texto() {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fuentes/PressStart2P.ttf"));
@@ -25,6 +29,7 @@ public class Texto {
 //	parameter.shadowOffsetY = 3; // Desplazamiento de la sombra en Y
 //	parameter.shadowColor = Color.GRAY; // Color de la sombra
 		fuente = generator.generateFont(parameter);
+		layout = new GlyphLayout();
 		generator.dispose();
 	}
 
@@ -37,5 +42,36 @@ public class Texto {
 
 	public void setColor(Color color) {
 		fuente.setColor(color);
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setPosition(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public float getWidth() {
+		layout.setText(fuente, texto);
+		return layout.width;
+	}
+
+	public float getHeight() {
+		layout.setText(fuente, texto);
+		return layout.height;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
+	}
+
+	public void dibujar(){
+		fuente.draw(Render.batch, texto, x - 150, y - 25);
 	}
 }
