@@ -1,6 +1,7 @@
 package pantallas;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
@@ -24,7 +25,7 @@ public class PantallaMenu implements Screen {
 	String opciones[] = {"Comenzar partida", "Opciones", "Salir"};
 	private Texto[] textos = new Texto[3];
 	public float tiempo = 0;
-
+	Sound sonido;
 
 	@Override
 	public void show() {
@@ -41,6 +42,7 @@ public class PantallaMenu implements Screen {
 		}
 
 		Gdx.input.setInputProcessor(entradas);
+		sonido=Gdx.audio.newSound(Gdx.files.internal("audios/click_sound_1.mp3"));
 	}
 
 	@Override
@@ -64,6 +66,7 @@ public class PantallaMenu implements Screen {
 			if (mouseX >= textoX && mouseX <= textoX + textos[i].getWidth() &&
 					mouseY >= textoY - textos[i].getHeight() && mouseY <= textoY) {
 				opc = i + 1; // Ajustar la opción seleccionada
+				sonido.play();
 			}
 		}
 
@@ -79,10 +82,12 @@ public class PantallaMenu implements Screen {
 		if (entradas.isAbajo() && tiempo > 0.2f) {
 			tiempo = 0;
 			opc = (opc % textos.length) + 1;
+			sonido.play();
 		}
 		if (entradas.isArriba() && tiempo > 0.2f) {
 			tiempo = 0;
 			opc = (opc - 2 + textos.length) % textos.length + 1;
+			sonido.play();
 		}
 
 		switch (opc) {
