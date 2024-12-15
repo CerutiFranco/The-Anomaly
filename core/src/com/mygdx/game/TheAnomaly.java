@@ -20,6 +20,7 @@ public class TheAnomaly extends Game {
 		Render.batch = new SpriteBatch();
 		this.setScreen(new PantallaMenu());
 		musica.play();
+		musica.setVolume(0.3f);
 	}
 
 	@Override

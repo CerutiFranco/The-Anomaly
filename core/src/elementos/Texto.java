@@ -74,4 +74,10 @@ public class Texto {
 	public void dibujar(){
 		fuente.draw(Render.batch, texto, x - 150, y - 25);
 	}
+
+	public void dispose() {
+		if (fuente != null) {
+			fuente.dispose();
+		}
+	}
 }

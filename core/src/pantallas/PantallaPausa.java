@@ -28,9 +28,10 @@ public class PantallaPausa implements Screen {
     String texto3 = "Salir";
     private Texto[] textos = new Texto[3];
     public float tiempo = 0;
+    private boolean mostrarTextos = true;
     @Override
     public void show() {
-        fondo = new Imagen("selva.jpg");
+        fondo = new Imagen("fondos/selva.jpg");
         fondo.setSize(anchoPantalla, altoPantalla);
         for (int i = 0; i < textos.length; i++) {
             textos[i] = new Texto();
@@ -48,9 +49,11 @@ public class PantallaPausa implements Screen {
         fondo.setPosition(centroX-100, centroY-100);
         fondo.dibujar();
 
-        textos[0].drawCenteredText(texto1,centroX, centroY + 200,fondo.getAncho());
-        textos[1].drawCenteredText(texto2,centroX, centroY+150,fondo.getAncho());
-        textos[2].drawCenteredText(texto3,centroX, centroY+100, fondo.getAncho());
+        if (mostrarTextos) {
+            textos[0].drawCenteredText(texto1, centroX, centroY + 200, fondo.getAncho());
+            textos[1].drawCenteredText(texto2, centroX, centroY + 150, fondo.getAncho());
+            textos[2].drawCenteredText(texto3, centroX, centroY + 100, fondo.getAncho());
+        }
         Render.batch.setColor(1, 1, 1, 1);
         Render.batch.end();
 
@@ -88,6 +91,10 @@ public class PantallaPausa implements Screen {
                 }
                 break;
             case 2:
+                if (entradas.isEnter()) {
+                    mostrarTextos = false;
+                    Render.cambiarPantalla(new PantallaOpciones(this,camaraJuego));
+                }
                 break;
             case 3:
                 if (entradas.isEnter()) {
@@ -119,7 +126,7 @@ public class PantallaPausa implements Screen {
 
     @Override
     public void hide() {
-
+        mostrarTextos = false;
     }
 
     @Override

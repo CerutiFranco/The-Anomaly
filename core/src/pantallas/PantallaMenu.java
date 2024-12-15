@@ -25,12 +25,13 @@ public class PantallaMenu implements Screen {
 	String opciones[] = {"Comenzar partida", "Opciones", "Salir"};
 	private Texto[] textos = new Texto[3];
 	public float tiempo = 0;
+	private boolean[] mouseSobreOpcion;
 	Sound sonido;
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		fondo = new Imagen("selva.jpg");
+		fondo = new Imagen("fondos/selva.jpg");
 		fondo.setSize(anchoPantalla, altoPantalla);
 
 		int avance = 40;
@@ -39,6 +40,10 @@ public class PantallaMenu implements Screen {
 			textos[i] = new Texto();
 			textos[i].setTexto(opciones[i]);
 			textos[i].setPosition((anchoPantalla/2) - (textos[i].getWidth()/2), (altoPantalla/2) + (textos[0].getHeight()/2) - (textos[i].getHeight()*i) + (avance*i));
+		}
+		mouseSobreOpcion = new boolean[opciones.length];
+		for (int i = 0; i < mouseSobreOpcion.length; i++) {
+			mouseSobreOpcion[i] = false;
 		}
 
 		Gdx.input.setInputProcessor(entradas);
@@ -63,12 +68,26 @@ public class PantallaMenu implements Screen {
 			float textoY = (altoPantalla / 2 + 100) - (i * 50);
 
 			// Comprobar si el mouse está sobre el texto
-			if (mouseX >= textoX && mouseX <= textoX + textos[i].getWidth() &&
-					mouseY >= textoY - textos[i].getHeight() && mouseY <= textoY) {
-				opc = i + 1; // Ajustar la opción seleccionada
+			//if (mouseX >= textoX && mouseX <= textoX + textos[i].getWidth() &&
+			//		mouseY >= textoY - textos[i].getHeight() && mouseY <= textoY) {
+			//	opc = i + 1; // Ajustar la opción seleccionada
+			//	sonido.play();
+			//}
+			boolean mouseSobreAhora = mouseX >= textoX && mouseX <= textoX + textos[i].getWidth() &&
+					mouseY >= textoY - textos[i].getHeight() && mouseY <= textoY;
+
+			if (mouseSobreAhora && !mouseSobreOpcion[i]) { // Si el mouse acaba de entrar
 				sonido.play();
+				mouseSobreOpcion[i] = true; // Marcar que el mouse ya está sobre esta opción
+			} else if (!mouseSobreAhora) { // Si el mouse ya no está sobre esta opción
+				mouseSobreOpcion[i] = false; // Restablecer el estado
+			}
+
+			if (mouseSobreAhora) {
+				opc = i + 1; // Actualizar la opción seleccionada
 			}
 		}
+
 
 		for (int i = 0; i < textos.length; i++) {
 			if (i == (opc - 1)) {

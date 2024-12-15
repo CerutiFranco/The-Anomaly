@@ -1,18 +1,16 @@
 package pantallas;
 
 import camaras.Camara;
-import camaras.PosicionesCamara;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-import enemigos.Enemigo;
-import enemigos.Slime;
+import entidades.enemigos.Enemigo;
+import entidades.enemigos.Slime;
 import entidades.Jugador;
 import entradas_salidas.Direcciones;
 import entradas_salidas.Entradas;
@@ -36,7 +34,6 @@ public class PantallaJuego implements Screen {
 		this.camara = new Camara();
 		rectangulosColision = new Array<>();
 		this.enemigos = new Array<>();
-
 	}
 	@Override
 	public void show() {
@@ -68,8 +65,10 @@ public class PantallaJuego implements Screen {
 		jugador.mover(direccion, delta,rectangulosColision);
 
 		for (Enemigo enemigo : enemigos) {
-			enemigo.actualizar(delta, jugador.getSprite().getX(), jugador.getSprite().getY());
+			enemigo.actualizar(delta, jugador.getSprite().getX(), jugador.getSprite().getY(), rectangulosColision);
 		}
+		jugador.actualizar(delta);
+		verificarColisionConEnemigos();
 
 		float limiteDerechoViewport = camara.getCamara().position.x + camara.getViewportWidth() / 2;
 		float jugadorDerecha = jugador.getSprite().getX() + jugador.getSprite().getWidth();
@@ -79,33 +78,15 @@ public class PantallaJuego implements Screen {
 		}
 
 		Render.batch.begin();
-		Render.batch.end(); // Termina el batch temporalmente
 
-		ShapeRenderer shapeRenderer = new ShapeRenderer();
-		shapeRenderer.setProjectionMatrix(camara.getCamara().combined);
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		shapeRenderer.setColor(1, 0, 0, 1); // Color rojo para las colisiones
-
-		for (Rectangle rect : rectangulosColision) {
-			shapeRenderer.rect(rect.x, rect.y, rect.width, rect.height);
-		}
-
-// Dibujar el hitbox del enemigo
-		shapeRenderer.setColor(0, 1, 0, 1); // Color verde para el enemigo
-		for (Enemigo enemigo : enemigos) {
-			Rectangle hitbox = enemigo.getHitbox();
-			shapeRenderer.rect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-		}
-
-		shapeRenderer.end();
-		Render.batch.begin();
 		camara.actualizar();
 		render.setView(camara.getCamara());
 		render.render();
 
 		jugador.dibujar(Render.batch);
+
 		for (Enemigo enemigo : enemigos) {
-			enemigo.dibujar(Render.batch);
+			enemigo.draw(Render.batch, 1.0f);
 		}
 		Render.batch.end();
 
@@ -142,7 +123,7 @@ public class PantallaJuego implements Screen {
 	}
 	private void inicializarEnemigos() {
 		// Ejemplo: Crear un slime en posición (200, 100)
-		Slime slime = new Slime(200, 800);
+		Slime slime = new Slime(500, 500,100);
 		boolean enColision = false;
 		for (Rectangle rect : rectangulosColision) {
 			if (slime.getHitbox().overlaps(rect)) {
@@ -151,10 +132,23 @@ public class PantallaJuego implements Screen {
 			}
 		}
 		if (enColision) {
-			System.out.println("El slime está en colisión. Ajustando posición inicial...");
+//			System.out.println("El slime está en colisión. Ajustando posición inicial...");
 			slime.ajustarPosicion(rectangulosColision);
 		}
 		enemigos.add(slime);
 	}
+	private void verificarColisionConEnemigos() {
+		// Obtener la hitbox del jugador
+		Rectangle hitboxJugador = jugador.getHitbox();
 
+		for (Enemigo enemigo : enemigos) {
+			Rectangle hitboxEnemigo = enemigo.getHitbox();
+			if (hitboxJugador.overlaps(hitboxEnemigo)) {
+				jugador.recibirDanio(1); // Reducir la vida en 1
+			}
+			if(jugador.getVida()==0){
+				Render.cambiarPantalla(new PantallaPerder(camara));
+			}
+		}
+	}
 }

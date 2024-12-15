@@ -14,4 +14,12 @@ public class AnimacionUtiles {
         }
         return new Animation<>(duracion, frames);
     }
+    public static TextureRegion[] cargarTextureRegion(TextureRegion[] textureRegion,Texture textura,int anchoSprite,int altoSprite,int cantidadFilas){
+        TextureRegion[][] temp = new TextureRegion(textura).split(anchoSprite, altoSprite);
+        int indice = 0;
+        for (int i = 0; i <cantidadFilas; i++) {
+            textureRegion[indice++] = temp[i][0];
+        }
+        return textureRegion;
+    }
 }

@@ -1,4 +1,4 @@
-package enemigos;
+package entidades.enemigos;
 
 public enum Estados {
     PATRULLANDO,

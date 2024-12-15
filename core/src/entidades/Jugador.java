@@ -23,11 +23,17 @@ public class Jugador extends Personaje{
         private final float gravedad = -500f; 
         private final float velocidadSalto = 300f;
         private boolean enElAire = false;
+        float hitboxWidth = 42.5f;
+        float hitboxHeight = 67.5f;
+        private int vida;
+        private boolean invulnerable = false; // Si el jugador es invulnerable
+        private float tiempoInvulnerabilidad = 0f; // Tiempo que el jugador está invulnerable
+        private final float DURACION_INVULNERABILIDAD = 1f;
 
-        public Jugador() {
+    public Jugador() {
             Texture textura = new Texture("personaje/Spritesheet jugador.png");
             TextureRegion[][] temp = new TextureRegion(textura).split(32, 32);
-
+            this.vida=5;
             // Configurar animaciones
             TextureRegion[] framesCaminarDerecha = new TextureRegion[4];
             TextureRegion[] framesCaminarIzquierda= new TextureRegion[4];
@@ -42,6 +48,9 @@ public class Jugador extends Personaje{
             sprite.setSize(80, 80);
             sprite.setPosition(0, 150);
 
+        }
+        public Rectangle getHitbox() {
+            return new Rectangle(sprite.getX(), sprite.getY(), hitboxWidth, hitboxHeight);
         }
 
         public TextureRegion[] configuraranimacion(TextureRegion[] framesAnimacion,int filaAnimacion,TextureRegion[][] temp){
@@ -123,11 +132,11 @@ public class Jugador extends Personaje{
             this.setPosition(nuevoX, nuevoY);
             sprite.setRegion(frame);
     }
-    private float ajustarAPlataforma(float x, float y, Array<Rectangle> colisionables) {
-        float hitboxWidth = 42.5f;
-        float hitboxHeight = 67.5f;
 
-        Rectangle rectJugador = new Rectangle(x, y, hitboxWidth, hitboxHeight);
+    private float ajustarAPlataforma(float x, float y, Array<Rectangle> colisionables) {
+
+        Rectangle rectJugador = getHitbox();
+        rectJugador.setPosition(x, y);
 
         for (Rectangle rect : colisionables) {
             if (rectJugador.overlaps(rect)) {
@@ -139,10 +148,10 @@ public class Jugador extends Personaje{
     }
 
     private float ajustarALadoIzquierdo(float x, Array<Rectangle> colisionables) {
-        float hitboxWidth = 42.5f;
-        float hitboxHeight = 67.5f;
 
-        Rectangle rectJugador = new Rectangle(x, sprite.getY(), hitboxWidth, hitboxHeight);
+        Rectangle rectJugador = getHitbox();
+        rectJugador.setX(x);
+
         for (Rectangle rect : colisionables) {
             if (rectJugador.overlaps(rect)) {
                 return rect.getX() - hitboxWidth;
@@ -152,10 +161,10 @@ public class Jugador extends Personaje{
     }
 
     private float ajustarALadoDerecho(float x, Array<Rectangle> colisionables) {
-        float hitboxWidth = 42.5f;
-        float hitboxHeight = 67.5f;
 
-        Rectangle rectJugador = new Rectangle(x, sprite.getY(), hitboxWidth, hitboxHeight);
+
+        Rectangle rectJugador = getHitbox();
+        rectJugador.setX(x);
         for (Rectangle rect : colisionables) {
             if (rectJugador.overlaps(rect)) {
                 return rect.getX() + rect.getWidth();
@@ -166,11 +175,10 @@ public class Jugador extends Personaje{
 
 
     public boolean verificarColision(float x, float y, Array<Rectangle> colisionables) {
-        float hitboxWidth = 42.5f; // Ancho escalado del hitbox
-        float hitboxHeight = 67.5f; // Alto escalado del hitbox
-
         // Crear el rectángulo de colisión con las dimensiones del hitbox
-        Rectangle rectJugador = new Rectangle(x, y, hitboxWidth, hitboxHeight);
+        Rectangle rectJugador = getHitbox();
+        rectJugador.setPosition(x, y);
+
         for (Rectangle rect : colisionables) {
             if (rectJugador.overlaps(rect)) {
                 return true;
@@ -186,6 +194,31 @@ public class Jugador extends Personaje{
             sprite.draw(batch);
         }
 
+        public void recibirDanio(int cantidad) {
+            if(!invulnerable) {
+                vida -= cantidad;
+                System.out.println("El jugador recibio daño");
+
+                    activarInvulnerabilidad(); // Activa la invulnerabilidad temporal después de recibir daño
+            }else{
+                System.out.println("El jugador es invunerable");
+            }
+        }
+        private void activarInvulnerabilidad() {
+            invulnerable = true;
+            System.out.println("Se activo invulnerabilidad");
+            tiempoInvulnerabilidad = 0f; // Reinicia el contador de invulnerabilidad
+        }
+        public void actualizar(float delta) {
+            // Actualiza el temporizador de invulnerabilidad
+            if (invulnerable) {
+                tiempoInvulnerabilidad += delta;
+                if (tiempoInvulnerabilidad >= DURACION_INVULNERABILIDAD) {
+                    invulnerable = false; // Termina la invulnerabilidad después de un tiempo
+                }
+            }
+        }
+
         public Sprite getSprite() {
             return sprite;
         }
@@ -195,8 +228,17 @@ public class Jugador extends Personaje{
         return getX();
     }
 
+    public Animation<TextureRegion> getCaminarDerecha() {
+        return caminarDerecha;
+    }
 
-	
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    public int getVida() {
+        return vida;
+    }
 }
   
 
