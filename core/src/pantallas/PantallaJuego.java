@@ -4,6 +4,7 @@ import camaras.Camara;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -34,6 +35,7 @@ public class PantallaJuego implements Screen {
 		this.camara = new Camara();
 		rectangulosColision = new Array<>();
 		this.enemigos = new Array<>();
+
 	}
 	@Override
 	public void show() {
@@ -67,8 +69,9 @@ public class PantallaJuego implements Screen {
 		for (Enemigo enemigo : enemigos) {
 			enemigo.actualizar(delta, jugador.getSprite().getX(), jugador.getSprite().getY(), rectangulosColision);
 		}
+
 		jugador.actualizar(delta);
-		verificarColisionConEnemigos();
+		verificarColisionEnemigos();
 
 		float limiteDerechoViewport = camara.getCamara().position.x + camara.getViewportWidth() / 2;
 		float jugadorDerecha = jugador.getSprite().getX() + jugador.getSprite().getWidth();
@@ -123,7 +126,7 @@ public class PantallaJuego implements Screen {
 	}
 	private void inicializarEnemigos() {
 		// Ejemplo: Crear un slime en posición (200, 100)
-		Slime slime = new Slime(500, 500,100);
+		Slime slime = new Slime(500, 500, 100);
 		boolean enColision = false;
 		for (Rectangle rect : rectangulosColision) {
 			if (slime.getHitbox().overlaps(rect)) {
@@ -132,16 +135,16 @@ public class PantallaJuego implements Screen {
 			}
 		}
 		if (enColision) {
-//			System.out.println("El slime está en colisión. Ajustando posición inicial...");
+			System.out.println("El slime está en colisión. Ajustando posición inicial...");
 			slime.ajustarPosicion(rectangulosColision);
 		}
 		enemigos.add(slime);
 	}
-	private void verificarColisionConEnemigos() {
-		// Obtener la hitbox del jugador
+
+	private void verificarColisionEnemigos() {
 		Rectangle hitboxJugador = jugador.getHitbox();
 
-		for (Enemigo enemigo : enemigos) {
+		for (Enemigo enemigo: enemigos) {
 			Rectangle hitboxEnemigo = enemigo.getHitbox();
 			if (hitboxJugador.overlaps(hitboxEnemigo)) {
 				jugador.recibirDanio(1); // Reducir la vida en 1
@@ -150,5 +153,9 @@ public class PantallaJuego implements Screen {
 				Render.cambiarPantalla(new PantallaPerder(camara));
 			}
 		}
+	}
+
+	private void dibujarBarraVida() {
+
 	}
 }

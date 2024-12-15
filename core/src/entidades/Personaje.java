@@ -69,4 +69,9 @@ public class Personaje extends Actor {
 		hitbox.setSize(getWidth(), getHeight());
 	}
 
+	public void detener() {
+		velocidad.set(0, 0); // Detiene cualquier movimiento
+		actualizarHitBox();  // Actualiza el hitbox a la posición actual
+	}
+
 }
