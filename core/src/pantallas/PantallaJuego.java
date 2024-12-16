@@ -4,19 +4,24 @@ import camaras.Camara;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import entidades.enemigos.Enemigo;
+import entidades.enemigos.Esqueleto;
 import entidades.enemigos.Slime;
 import entidades.Jugador;
 import entradas_salidas.Direcciones;
 import entradas_salidas.Entradas;
 import utiles.Render;
 import elementos.Mapa;
+
+import java.util.Iterator;
 
 
 public class PantallaJuego implements Screen {
@@ -27,6 +32,7 @@ public class PantallaJuego implements Screen {
 	private Array<Rectangle> rectangulosColision;
 	private Camara camara;
 	private Array<Enemigo> enemigos;
+	private TextureRegion[] barraVida;
 
 	public PantallaJuego() {
 		this.jugador = new Jugador();
@@ -35,7 +41,6 @@ public class PantallaJuego implements Screen {
 		this.camara = new Camara();
 		rectangulosColision = new Array<>();
 		this.enemigos = new Array<>();
-
 	}
 	@Override
 	public void show() {
@@ -49,19 +54,29 @@ public class PantallaJuego implements Screen {
 				rectangulosColision.add(rect);
 			}
 		}
+		Texture texturaBarraVida = new Texture("barras/Barras de vida.png");
+
+		// Dividir el spritesheet en regiones de 61x15 (5 filas, 1 columna)
+		TextureRegion[][] temp = TextureRegion.split(texturaBarraVida, 61, 15);
+
+		// Guardar las regiones en un arreglo lineal
+		barraVida = new TextureRegion[5]; // 5 estados de la barra
+		for (int i = 0; i < 5; i++) {
+			barraVida[i] = temp[i][0]; // Cada fila representa un estado de la barra
+		}
 		inicializarEnemigos();
 		for (Enemigo enemigo : enemigos) {
 			enemigo.ajustarPosicion(rectangulosColision);
 		}
+
+
 	}
-	
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
-			Render.cambiarPantalla(new PantallaPausa(this,camara));
-		}
+
 		Direcciones direccion = entradas.getDireccion();
 
 		jugador.mover(direccion, delta,rectangulosColision);
@@ -69,9 +84,25 @@ public class PantallaJuego implements Screen {
 		for (Enemigo enemigo : enemigos) {
 			enemigo.actualizar(delta, jugador.getSprite().getX(), jugador.getSprite().getY(), rectangulosColision);
 		}
-
 		jugador.actualizar(delta);
-		verificarColisionEnemigos();
+		verificarColisionConEnemigos();
+		if (jugador.getEspada().isAtacando()) {
+			for (Enemigo enemigo : enemigos) {
+				if (jugador.getEspada().getHitbox().overlaps(enemigo.getHitbox())) {
+					boolean ataqueDesdeDerecha = jugador.getSprite().getX() < enemigo.getX();
+					enemigo.recibirDanio(ataqueDesdeDerecha);
+					System.out.println("¡Golpeaste al enemigo!");
+				}
+			}
+		}
+		Iterator<Enemigo> iterador = enemigos.iterator();
+		while (iterador.hasNext()) {
+			Enemigo enemigo = iterador.next();
+			if (enemigo.getVida() <= 0) {
+				iterador.remove();
+				System.out.println("Enemigo eliminado");
+			}
+		}
 
 		float limiteDerechoViewport = camara.getCamara().position.x + camara.getViewportWidth() / 2;
 		float jugadorDerecha = jugador.getSprite().getX() + jugador.getSprite().getWidth();
@@ -79,6 +110,7 @@ public class PantallaJuego implements Screen {
 		if (jugadorDerecha >= limiteDerechoViewport) {
 			camara.moverACamaraSiguiente(); // Cambiar la posición de la cámara según tu lógica
 		}
+
 
 		Render.batch.begin();
 
@@ -91,9 +123,13 @@ public class PantallaJuego implements Screen {
 		for (Enemigo enemigo : enemigos) {
 			enemigo.draw(Render.batch, 1.0f);
 		}
+		dibujarBarraVida();
+
 		Render.batch.end();
 
-
+		if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
+			Render.cambiarPantalla(new PantallaPausa(this,camara));
+		}
 	}
 
 	@Override
@@ -126,25 +162,31 @@ public class PantallaJuego implements Screen {
 	}
 	private void inicializarEnemigos() {
 		// Ejemplo: Crear un slime en posición (200, 100)
-		Slime slime = new Slime(500, 500, 100);
-		boolean enColision = false;
-		for (Rectangle rect : rectangulosColision) {
-			if (slime.getHitbox().overlaps(rect)) {
-				slime.setPosition(slime.getX(), rect.getY() + rect.getHeight());
-				break;
+
+		enemigos.add(new Slime(500, 500,100));
+		enemigos.add(new Esqueleto(300, 300,100));
+		for(int i=0;i<enemigos.size;i++){
+			boolean enColision = false;
+			Enemigo enemigo=enemigos.get(i);
+			for (Rectangle rect : rectangulosColision) {
+				if (enemigo.getHitbox().overlaps(rect)) {
+					enemigo.setPosition(enemigo.getX(), rect.getY() + rect.getHeight());
+					enColision = true;
+					break;
+				}
+			}
+			if (enColision) {
+				enemigo.ajustarPosicion(rectangulosColision);
 			}
 		}
-		if (enColision) {
-			System.out.println("El slime está en colisión. Ajustando posición inicial...");
-			slime.ajustarPosicion(rectangulosColision);
-		}
-		enemigos.add(slime);
-	}
 
-	private void verificarColisionEnemigos() {
+
+	}
+	private void verificarColisionConEnemigos() {
+		// Obtener la hitbox del jugador
 		Rectangle hitboxJugador = jugador.getHitbox();
 
-		for (Enemigo enemigo: enemigos) {
+		for (Enemigo enemigo : enemigos) {
 			Rectangle hitboxEnemigo = enemigo.getHitbox();
 			if (hitboxJugador.overlaps(hitboxEnemigo)) {
 				jugador.recibirDanio(1); // Reducir la vida en 1
@@ -154,8 +196,23 @@ public class PantallaJuego implements Screen {
 			}
 		}
 	}
-
 	private void dibujarBarraVida() {
 
+		// Proyección de UI (pantalla completa)
+		Matrix4 uiMatrix = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Render.batch.setProjectionMatrix(uiMatrix);
+
+		float escala = 2.0f;
+		float ancho = barraVida[0].getRegionWidth() * escala;
+		float alto = barraVida[0].getRegionHeight() * escala;
+
+		float x = Gdx.graphics.getWidth() - ancho - 50; // Derecha
+		float y = Gdx.graphics.getHeight() - alto - 50; // Superior
+
+		int indiceBarra = Math.max(0, Math.min(5 - jugador.getVida(), 4));
+		Render.batch.draw(barraVida[indiceBarra], x, y, ancho, alto);
+
+		// Restaurar matriz original
+		Render.batch.setProjectionMatrix(camara.getCamara().combined);
 	}
 }

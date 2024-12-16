@@ -14,7 +14,7 @@ import utiles.AnimacionUtiles;
 
 public class Enemigo extends Actor {
     private final Sprite sprite;
-    private final Animation<TextureRegion> caminar;
+    protected Animation<TextureRegion> caminar;
     private final float gravedad = -500f;
     private final float anchoHitbox;
     private final float altoHitbox;
@@ -26,11 +26,13 @@ public class Enemigo extends Actor {
     private Estado estadoactual;
     private boolean moviendoDerecha;
     private float posicionInicialX;
+    private int vida;
 
-    public Enemigo(String rutaCaminar, float x, float y, float anchoHitbox, float altoHitbox,int rangoPatrulla,float velocidad) {
+
+    public Enemigo(String rutaCaminar, float x, float y, float anchoHitbox, float altoHitbox,int rangoPatrulla,float velocidad,int vida) {
         Texture textura = new Texture(rutaCaminar);
         sprite = new Sprite();
-        caminar = AnimacionUtiles.crearAnimacion(textura, 16, 19, 4, 0, 0.5f);
+        caminar = AnimacionUtiles.crearAnimacion(textura, 16, 19, 4, 0, 0.2f);
         this.rangoPatrulla=rangoPatrulla;
         this.anchoHitbox = anchoHitbox;
         this.altoHitbox = altoHitbox;
@@ -38,14 +40,16 @@ public class Enemigo extends Actor {
         this.estadoactual = Estado.PATRULLANDO;
         this.moviendoDerecha = true;
         this.posicionInicialX=x;
+        this.vida=vida;
         setPosition(x,y);
         setSize(40f, 40f);
     }
 
     public void actualizar(float delta, float jugadorX, float jugadorY, Array<Rectangle> colisionables) {
+        // Incrementar estadoTiempo una sola vez
         estadoTiempo += delta;
 
-        // Lógica de movimiento horizontal (ejemplo: perseguir al jugador)
+        // Lógica de IA: patrullar o perseguir
         float distanciaAlJugador = Math.abs(jugadorX - getX());
         if (distanciaAlJugador <= rangoDeteccion) {
             estadoactual = Estado.PERSIGUIENDO;
@@ -53,7 +57,6 @@ public class Enemigo extends Actor {
             estadoactual = Estado.PATRULLANDO;
         }
 
-        // Ejecutar lógica según el estado
         if (estadoactual == Estado.PATRULLANDO) {
             patrullar(delta);
         } else if (estadoactual == Estado.PERSIGUIENDO) {
@@ -61,7 +64,6 @@ public class Enemigo extends Actor {
         }
 
         ajustarPosicion(colisionables);
-
     }
     private void patrullar(float delta) {
         if (moviendoDerecha) {
@@ -123,9 +125,33 @@ public class Enemigo extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
+
+        // Aquí, simplemente obtenemos el frame actual, SIN modificar estadoTiempo
         TextureRegion frame = caminar.getKeyFrame(estadoTiempo, true);
         sprite.setRegion(frame);
         batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
     }
 
+    public void recibirDanio(boolean ataqueDesdeDerecha) {
+        vida -= 1;
+
+        if (vida <= 0) {
+            // Si la vida es 0 o menor, marcar para eliminación
+            vida = 0;
+            this.remove(); // Quitar el actor de la escena
+        } else {
+            // Mover hacia atrás al recibir daño
+            float retroceso = 70f; // La distancia del salto hacia atrás
+            if (ataqueDesdeDerecha) {
+                setX(getX() + retroceso);
+            } else {
+                setX(getX() - retroceso);
+            }
+            System.out.println("¡Enemigo recibió daño y fue empujado hacia atrás!");
+        }
+    }
+
+    public int getVida() {
+        return vida;
+    }
 }

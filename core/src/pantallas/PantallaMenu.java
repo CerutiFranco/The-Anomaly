@@ -22,8 +22,8 @@ public class PantallaMenu implements Screen {
 
 	Entradas entradas = new Entradas();
 	int opc = 1;
-	String opciones[] = {"Comenzar partida", "Opciones", "Salir"};
-	private Texto[] textos = new Texto[3];
+	String opciones[] = {"1 jugador","2 jugadores", "Opciones", "Salir",};
+	private Texto[] textos = new Texto[opciones.length];
 	public float tiempo = 0;
 	private boolean[] mouseSobreOpcion;
 	Sound sonido;

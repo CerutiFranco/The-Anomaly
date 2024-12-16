@@ -1,12 +1,14 @@
 package entidades;
 
-import com.badlogic.gdx.graphics.Color;
+import armas.Espada;
+import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import entradas_salidas.Direcciones;
@@ -16,6 +18,8 @@ public class Jugador extends Personaje{
         private Animation<TextureRegion> caminarDerecha;
         private Animation<TextureRegion> caminarIzquierda;
         private Animation<TextureRegion> saltar;
+        private Animation<TextureRegion> atacarDerecha;
+        private Animation<TextureRegion> atacarIzquierda;
         private float estadoTiempo;
         private TextureRegion quieto;
         private Sprite sprite;
@@ -31,28 +35,36 @@ public class Jugador extends Personaje{
         private boolean invulnerable = false;
         private float tiempoInvulnerabilidad = 0f;
         private final float DURACION_INVULNERABILIDAD = 1f;
+        private boolean mirandoDerecha = true;
+        private float tiempoAtaque = 0f; // Control del tiempo para la animación de ataque
+        private boolean atacando = false;
         private Espada espada;
-        private ShapeRenderer sr;
 
-        public Jugador() {
+
+    public Jugador() {
             Texture textura = new Texture("personaje/Spritesheet jugador.png");
             TextureRegion[][] temp = new TextureRegion(textura).split(32, 32);
+            Texture texturaAtaque = new Texture("personaje/ataque spritesheet.png");
+            TextureRegion[][] temp2 = new TextureRegion(texturaAtaque).split(33, 28);
             this.vida = 5;
             // Configurar animaciones
             TextureRegion[] framesCaminarDerecha = new TextureRegion[4];
             TextureRegion[] framesCaminarIzquierda= new TextureRegion[4];
             TextureRegion[] framesSaltar= new TextureRegion[4];
+            TextureRegion[] framesAtacarDerecha = new TextureRegion[4];
+            TextureRegion[] framesAtacarIzquierda = new TextureRegion[4];
             caminarDerecha = new Animation<>(0.1f, configuraranimacion(framesCaminarDerecha,2,temp));
             caminarIzquierda= new Animation<>(0.1f, configuraranimacion(framesCaminarIzquierda,3,temp));
             saltar= new Animation<>(0.3f, configuraranimacion(framesSaltar,4,temp));
             quieto = temp[0][0];
+            atacarDerecha = new Animation<>(0.1f, configuraranimacion(framesAtacarDerecha,1,temp2));
+            atacarIzquierda = new Animation<>(0.1f, configuraranimacion(framesAtacarIzquierda,2,temp2));
 
             // Configurar sprite
             sprite = new Sprite(quieto);
             sprite.setSize(80, 80);
             sprite.setPosition(0, 150);
-            espada = new Espada();
-            sr = new ShapeRenderer();
+            espada=new Espada();
 
         }
 
@@ -78,6 +90,7 @@ public class Jugador extends Personaje{
 
             switch (direccion) {
                 case DERECHA:
+                    mirandoDerecha = true;
                     nuevoX += 100 * delta;
                     if (!saltando && !cayendo) { // Solo usa la animación de caminar si está en el suelo
                         frame = caminarDerecha.getKeyFrame(estadoTiempo, true);
@@ -86,6 +99,7 @@ public class Jugador extends Personaje{
 
                     break;
                 case IZQUIERDA:
+                    mirandoDerecha = false;
                     nuevoX -= 100 * delta;
                     if (!enElAire) {
                         frame = caminarIzquierda.getKeyFrame(estadoTiempo, true);
@@ -99,6 +113,27 @@ public class Jugador extends Personaje{
                         velocidadY = velocidadSalto;
                     }
                     frame = saltar.getKeyFrame(estadoTiempo,false);
+                    estadoTiempo += delta;
+                    break;
+                case ARRIBA_DERECHA:
+                    mirandoDerecha = true;
+                    if (!enElAire) {
+                        enElAire = true;
+                        velocidadY = velocidadSalto;
+                    }
+                    nuevoX += 100 * delta; // Movimiento hacia la derecha
+                    frame = saltar.getKeyFrame(estadoTiempo, false); // Mantén la animación de salto
+                    estadoTiempo += delta;
+                    break;
+
+                case ARRIBA_IZQUIERDA:
+                    mirandoDerecha = false;
+                    if (!enElAire) {
+                        enElAire = true;
+                        velocidadY = velocidadSalto;
+                    }
+                    nuevoX -= 100 * delta; // Movimiento hacia la izquierda
+                    frame = saltar.getKeyFrame(estadoTiempo, false); // Mantén la animación de salto
                     estadoTiempo += delta;
                     break;
                 case QUIETO:
@@ -139,15 +174,9 @@ public class Jugador extends Personaje{
             this.setPosition(nuevoX, nuevoY);
             sprite.setRegion(frame);
 
-            espada.actualizarPosicion(sprite.getX(), sprite.getY(), hitboxWidth, hitboxHeight);
 
-            sr.begin(ShapeRenderer.ShapeType.Line);
-            sr.setColor(Color.RED);
-            System.out.println("Dibujando hitbox - X: " + getHitbox().x + ", Y: " + getHitbox().y +
-                    ", Width: " + espada.getHitbox().getWidth() + ", Height: " + espada.getHitbox().getHeight());
 
-            sr.rect(espada.getHitbox().x, espada.getHitbox().y, espada.getHitbox().getWidth(), espada.getHitbox().getHeight());
-            sr.end();
+
 
     }
     private float ajustarAPlataforma(float x, float y, Array<Rectangle> colisionables) {
@@ -207,7 +236,6 @@ public class Jugador extends Personaje{
 
     public void dibujar(SpriteBatch batch) {
         sprite.draw(batch);
-        espada.dibujar(batch);
     }
 
     public void recibirDanio(int cantidad) {
@@ -235,6 +263,42 @@ public class Jugador extends Personaje{
                 invulnerable = false; // Termina la invulnerabilidad después de un tiempo
             }
         }
+        atacar();
+        espada.actualizarPosicion(sprite.getX(), sprite.getY(), mirandoDerecha);
+
+        // Si el jugador está atacando, marcar la espada como atacando
+        if (atacando) {
+            espada.setAtacando(true);
+        } else {
+            espada.setAtacando(false);
+        }
+
+        // Opcional: Dibujar hitbox para debug
+        if (espada.isAtacando()) {
+            System.out.println("Hitbox Espada: " + espada.getHitbox());
+        }
+    }
+
+    public void atacar() {
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E) && !atacando) {
+            atacando = true; // Inicia el ataque
+            tiempoAtaque = 0f; // Reinicia el tiempo de ataque
+        }
+
+        if (atacando) {
+            if (mirandoDerecha) {
+                sprite.setRegion(atacarDerecha.getKeyFrame(tiempoAtaque, false));
+            } else {
+                sprite.setRegion(atacarIzquierda.getKeyFrame(tiempoAtaque, false));
+            }
+
+            tiempoAtaque += Gdx.graphics.getDeltaTime();
+
+            // Verifica si la animación ha terminado
+            if (atacarDerecha.isAnimationFinished(tiempoAtaque) || atacarIzquierda.isAnimationFinished(tiempoAtaque)) {
+                atacando = false; // Termina el ataque
+            }
+        }
     }
 
     public Sprite getSprite() {
@@ -260,7 +324,6 @@ public class Jugador extends Personaje{
     public Espada getEspada() {
         return espada;
     }
-
 }
   
 

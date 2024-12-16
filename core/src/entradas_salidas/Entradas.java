@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 
 public class Entradas implements InputProcessor {
 
-	private boolean abajo = false, arriba = false, enter = false, derecha = false, izquierda = false,escape = false;
+	private boolean abajo = false, arriba = false, enter = false, derecha = false, izquierda = false,escape = false,ataque=false;
 	private int mouseX = 0, mouseY = 0;
 	private final int ALTO = 720;
 	private boolean click = false;
@@ -32,6 +32,9 @@ public class Entradas implements InputProcessor {
 		}
 		if (keycode==Keys.ESCAPE){
 			escape = true;
+		}
+		if (keycode == Keys.E) {
+			ataque = true;
 		}
 		return false;
 	}
@@ -124,10 +127,23 @@ public class Entradas implements InputProcessor {
 		return click;
 	}
 
+	public boolean isAtaque() {
+		return ataque;
+	}
+
 	public Direcciones getDireccion() {
-		if(isArriba()) return Direcciones.ARRIBA;
-		if(isDerecha()) return Direcciones.DERECHA;
-		if(isIzquierda()) return Direcciones.IZQUIERDA;
+		if (isArriba()) {
+			if (isDerecha()) {
+				return Direcciones.ARRIBA_DERECHA; // Debes agregar esta dirección si no existe
+			} else if (isIzquierda()) {
+				return Direcciones.ARRIBA_IZQUIERDA; // Lo mismo aquí
+			} else {
+				return Direcciones.ARRIBA; // Solo arriba
+			}
+		} else {
+			if (isDerecha()) return Direcciones.DERECHA;
+			if (isIzquierda()) return Direcciones.IZQUIERDA;
+		}
 		return Direcciones.QUIETO;
 	}
 
